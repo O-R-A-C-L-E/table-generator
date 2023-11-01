@@ -1,0 +1,52 @@
+@import (reference) '../../assets/less/imports';
+
+.b-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: @base-modal-bg-color;
+  border: @base-border;
+  .base-box-shadow();
+  padding: 1.25rem;
+
+  &__mask {
+    background: @base-overlay-color;
+    width:100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &__container {
+    min-width: 100vw;
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__header {
+
+    &__title {
+      color: @base-color;
+      font-weight: @bold-font-weight;
+    }
+  }
+
+  &__hide-button {
+
+  }
+
+  &__content {
+
+  }
+
+  &__footer {
+
+  }
+}

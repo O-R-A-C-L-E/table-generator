@@ -1,0 +1,33 @@
+@import (reference) './imports';
+
+:root {
+  font-family: @base-font-family;
+  font-size: @root-font-size;
+  line-height: 1.5;
+  font-weight: @base-font-weight;
+
+  color: @base-color;
+  background-color: @base-bg-color;
+
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  background: @light-bg-color;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.dn {
+  display: none !important;
+}

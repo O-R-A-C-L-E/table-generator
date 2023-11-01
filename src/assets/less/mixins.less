@@ -1,0 +1,28 @@
+@import (reference) 'variables';
+
+.box-shadow(...) {
+  -webkit-box-shadow: @arguments;
+  -moz-box-shadow: @arguments;
+  box-shadow: @arguments;
+}
+
+.base-box-shadow() {
+  .box-shadow(0 0.333rem 0.333rem 0 @base-box-shadow-color);
+}
+
+.outline(...) {
+  outline: 1px solid @arguments;
+  .box-shadow(0 1px 1px 0 @arguments);
+}
+
+.base-outline() {
+  .outline(@base-input-outline-color);
+}
+
+
+.flex-center-by-direction(...) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: @arguments;
+}

@@ -1,0 +1,74 @@
+@import (reference) '../../../../assets/less/imports';
+
+.b-dropdown {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: #FFFFFF;
+  border: @base-border;
+  border-radius: @base-border-radius;
+  .base-box-shadow();
+
+  &.slide-down-animate {
+    animation: show-up both ease-in .2s;
+  }
+
+  &__selected-items-container {
+    .flex-center-by-direction(column);
+    overflow-y: auto;
+  }
+
+  &__options-container {
+    width: 100%;
+    position: relative;
+    max-height: 20rem;
+    overflow-y: auto;
+    .flex-center-by-direction(column);
+
+    &::-webkit-scrollbar {
+      width: 0.3125rem;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+      border-radius: 10px;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: @base-color;
+      border-radius: 0.625rem;
+    }
+
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  }
+
+  &__option {
+    .flex-center-by-direction(row);
+    width: 100%;
+    border-bottom: @base-border;
+    color: @base-color;
+    cursor: pointer;
+
+    &[data-selected] {
+      background: @button-primary-bg-color;
+    }
+  }
+}
+
+@keyframes show-up {
+  from {
+    opacity: 0;
+    transform: scale(80%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

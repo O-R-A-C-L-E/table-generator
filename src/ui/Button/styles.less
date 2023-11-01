@@ -1,0 +1,54 @@
+@import (reference) '../../assets/less/imports';
+
+.b-button {
+  color: @base-color;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: @base-font-family;
+  font-size: @base-font-size;
+  font-weight: @base-font-weight;
+  padding: @base-button-padding;
+  border: 1px solid;
+  border-radius: @base-button-border-radius;
+
+  &:focus {
+    outline: @base-input-outline;
+  }
+
+  &--primary {
+    color: @button-primary-color;
+    background: @button-primary-bg-color;
+    border-color: @button-primary-bg-color;
+  }
+
+  &--danger {
+    color: @button-danger-color;
+    background: @button-danger-bg-color;
+    border-color: @button-danger-bg-color;
+  }
+
+  &--link {
+    border: none;
+    text-decoration: underline;
+    background: none;
+    padding: .5rem;
+
+    &-primary {
+      color: @button-primary-bg-color;
+
+      &:focus {
+        outline: none;
+        .box-shadow(0 .2rem .2rem 0 @base-input-outline-color);
+      }
+    }
+    &-danger {
+      color: @button-danger-bg-color;
+
+      &:focus {
+        outline: none;
+        .box-shadow(0 .2rem .2rem 0 @button-danger-bg-color);
+      }
+    }
+  }
+}

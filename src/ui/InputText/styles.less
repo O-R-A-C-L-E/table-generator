@@ -1,0 +1,22 @@
+@import (reference) '../../assets/less/imports';
+
+.b-inputtext {
+  .flex-center-by-direction(column);
+  width: 100%;
+
+  &.error .b-inputtext__value {
+    border-color: @button-danger-bg-color;
+    color: @button-danger-bg-color;
+  }
+
+  &__value {
+    padding: @base-inputtext-padding;
+    border-radius: @base-inputtext-border-radius;
+    border: @base-inputtext-border;
+    font-size: @base-font-size;
+  }
+
+  &:focus {
+    .base-outline();
+  }
+}

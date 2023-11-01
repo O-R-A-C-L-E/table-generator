@@ -1,0 +1,43 @@
+@import (reference) '../../assets/less/imports';
+
+.b-select {
+
+  &__value {
+    cursor: pointer;
+    color: @dark-color;
+
+    &-placeholder {
+      color: @base-color;
+    }
+
+
+    &:focus {
+      outline: @base-input-outline;
+    }
+  }
+
+  &__option {
+    .flex-center-by-direction(row);
+    padding: @base-input-padding;
+    width: 100%;
+    border-bottom: @base-border;
+    font-size: @base-font-size;
+    color: @base-color;
+    cursor: pointer;
+
+    &[data-selected] {
+      background: @button-primary-bg-color;
+    }
+
+    &:focus {
+      background: @base-input-outline-color;
+      .base-outline();
+    }
+
+    &:hover {
+      background: @base-input-outline-color;
+    }
+  }
+
+}
+

@@ -1,7 +1,7 @@
 import {ChangeEvent, ComponentPropsWithRef, FC, FocusEvent} from "react";
 import './styles.less';
 
-interface IInputTextProps extends Omit<ComponentPropsWithRef<'input'>, 'pattern'> {
+interface IInputTextProps extends ComponentPropsWithRef<'input'> {
     error?: boolean;
 }
 

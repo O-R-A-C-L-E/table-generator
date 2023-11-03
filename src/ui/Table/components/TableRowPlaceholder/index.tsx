@@ -6,7 +6,6 @@ type TTableRowPlaceholder = {
 }
 const TableRowPlaceholder:FC<TTableRowPlaceholder> = ({rowsLength, columnsLength}) => {
     const renderRows = ():ReactNode[] | undefined => {
-        console.log(rowsLength)
         if (rowsLength <= 0) return;
         const result:ReactNode[] = [];
         for (let i = 0; i < rowsLength; i++) {
@@ -19,7 +18,6 @@ const TableRowPlaceholder:FC<TTableRowPlaceholder> = ({rowsLength, columnsLength
     };
 
     const renderColumns = ():ReactNode[] | undefined => {
-        console.log('col', columnsLength)
         if (columnsLength <= 0) return;
         const result:ReactNode[] = [];
 

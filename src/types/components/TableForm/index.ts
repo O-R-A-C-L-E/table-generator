@@ -1,9 +1,11 @@
-import {TFormState} from "@/types/store/formStore.ts";
+import {TFormStateValues} from '@/types/store/formStore.ts';
 
 export type TTableFormProps = {
-    initialValue?: TFormState;
+    initialValue?: TFormStateValues;
     buttonText: string;
-    onSubmit?: (formState: TFormState) => void;
+    onSubmit?: (formState: TFormStateValues) => void;
     shouldSubscribe?: boolean;
     className?: string;
+    validateOnTouch?: boolean
+    type: string;
 }

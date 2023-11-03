@@ -1,4 +1,4 @@
-@import (reference) '../../assets/less/imports';
+@import (reference) '@/assets/less/imports';
 
 .b-inputtext {
   .flex-center-by-direction(column);
@@ -7,13 +7,29 @@
   &.error .b-inputtext__value {
     border-color: @button-danger-bg-color;
     color: @button-danger-bg-color;
+
+    .placeholder-color(@button-danger-bg-color);
   }
 
   &__value {
+    width: 100%;
     padding: @base-inputtext-padding;
     border-radius: @base-inputtext-border-radius;
     border: @base-inputtext-border;
     font-size: @base-font-size;
+
+    &:focus {
+      outline: @base-input-outline;
+    }
+
+    &[type="number"] {
+      -moz-appearance: textfield;
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
   }
 
   &:focus {

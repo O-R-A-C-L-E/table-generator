@@ -26,3 +26,21 @@
   align-items: center;
   flex-direction: @arguments;
 }
+
+.placeholder-color(...) {
+  &:-ms-input-placeholder {
+    color: @arguments !important;
+  }
+  &:-moz-placeholder {
+    color: @arguments !important;
+  }
+  &::-moz-placeholder {
+    opacity: 1;
+    color: @arguments !important;
+  }
+
+  &::-webkit-input-placeholder,
+  &::placeholder {
+    color: @arguments !important;
+  }
+}

@@ -28,6 +28,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    &.modal-show {
+      -webkit-animation: modal-show .3s forwards ease-out;
+      -o-animation: modal-show .3s forwards ease-out;
+      animation: modal-show .3s forwards ease-out;
+    }
+    &.modal-hide {
+      -webkit-animation: modal-hide .3s forwards ease-out;
+      -o-animation: modal-hide .3s forwards ease-out;
+      animation: modal-hide .3s forwards ease-out;
+    }
   }
 
   &__header {
@@ -48,5 +59,26 @@
 
   &__footer {
 
+  }
+}
+
+@keyframes modal-hide {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: scale(.8);
+  }
+}
+
+@keyframes modal-show {
+  from {
+    opacity: 0;
+    transform: scale(.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

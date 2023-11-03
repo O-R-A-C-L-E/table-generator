@@ -1,37 +1,44 @@
-import {FC, ReactElement, ReactNode, useCallback, useEffect, useRef, useState} from 'react';
+import {FC, ReactElement, ReactNode, useCallback, useLayoutEffect, useRef, useState} from 'react';
 import TableRowButtons from './components/TableRowButtons.js';
 import Controls from './components/Controls.js';
 import Table from '@/ui/Table/index.js';
 import Column from '@/ui/Table/components/Column/index.js';
 import Modal from '@/ui/Modal/index.js';
-import TableForm from '../TableForm/index.js';
+import TableForm from '../TableForm/TableForm.js';
 import './styles.less';
 import {Subscription} from 'rxjs';
 import {tablesStore} from '@/store/tablesStore.js';
-import {TTableUiProps} from '@/types/components/TableUi/index.js';
+import {ITableUiProps} from '@/types/components/TableUi/index.js';
 import {TItem} from '@/types/store/tablesStore.js';
+import {useDelayUnmount} from '@/hooks/useDelayUnmount.js';
 
 
-const TableUi: FC<TTableUiProps> = (
+const TableUi: FC<ITableUiProps> = (
     {
         initial,
-        id,
+        tableId,
         items,
+        className,
+        ...rest
     }
 ) => {
+    const [isMounted, setIsMounted] = useState(true);
+    const shouldRender = useDelayUnmount(isMounted, 300);
     const [tableItems, setTableItems] = useState<TItem[]>(items);
+    console.log(tableItems);
     const [selectedRowIndex, setSelectedRowIndex] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const tableChangeSubscriptionRef = useRef<Subscription | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
-    useEffect(() => {
-        tableChangeSubscriptionRef.current = tablesStore.subscribeOnTableItemChange(id, setTableItems);
+    useLayoutEffect(() => {
+        tableChangeSubscriptionRef.current = tablesStore.subscribeOnTableItemChange(tableId, setTableItems);
         setTableItems(items);
 
         return () => {
             tableChangeSubscriptionRef.current?.unsubscribe();
         };
-    }, [id, items]);
+    }, [tableId, items]);
 
     const handleModalHide = useCallback(() => {
         setIsModalVisible(false);
@@ -39,8 +46,8 @@ const TableUi: FC<TTableUiProps> = (
 
     const handleSubmit = useCallback((value: TItem) => {
         setIsModalVisible(false);
-        tablesStore.editTableItem(id, selectedRowIndex, value);
-    }, [id, selectedRowIndex]);
+        tablesStore.editTableItem(tableId, selectedRowIndex, value);
+    }, [tableId, selectedRowIndex]);
 
     const handleRowEdit = useCallback((rowIndex: number) => {
         setSelectedRowIndex(rowIndex);
@@ -51,56 +58,69 @@ const TableUi: FC<TTableUiProps> = (
         setTableItems(prevState => {
             return prevState.filter((_, i) => i !== rowIndex);
         });
-        tablesStore.deleteTableItem(id, rowIndex);
-    }, [id]);
+        tablesStore.deleteTableItem(tableId, rowIndex);
+    }, [tableId]);
 
-    const bodyTemplateName = useCallback((rowData: TItem): ReactElement => {
+    const bodyTemplateName = (rowData: TItem): ReactElement => {
         return (
-            <>
+            <div className={'b-table__cell-content'}>
                 <span className="b-table__cell-title">Name</span>
-                {rowData.name}
-            </>
+                <span className="b-table__cell-value">{rowData.name}</span>
+            </div>
         );
-    }, []);
+    };
 
-    const bodyTemplateSurname = useCallback((rowData: TItem): ReactElement => {
+    const bodyTemplateSurname = (rowData: TItem): ReactElement => {
         return (
-            <>
+            <div className={'b-table__cell-content'}>
                 <span className="b-table__cell-title">Surname</span>
-                {rowData.surname}
-            </>
+                <span className="b-table__cell-value">{rowData.surname}</span>
+            </div>
         );
-    }, []);
+    };
 
-    const bodyTemplateAge = useCallback((rowData: TItem): ReactElement => {
+    const bodyTemplateAge = (rowData: TItem): ReactElement => {
         return (
-            <>
+            <div className={'b-table__cell-content'}>
                 <span className="b-table__cell-title">Age</span>
-                {rowData.age}
-            </>
+                <span className="b-table__cell-value">{rowData.age}</span>
+            </div>
         );
-    }, []);
+    };
 
-    const bodyTemplateCity = useCallback((rowData: TItem): ReactElement => {
+    const bodyTemplateCity = (rowData: TItem): ReactElement => {
         return (
-            <>
+            <div className={'b-table__cell-content'}>
                 <span className="b-table__cell-title">City</span>
-                {rowData.city}
-            </>
+                <span className="b-table__cell-value">{rowData.city}</span>
+            </div>
         );
-    }, []);
+    };
 
     const bodyTemplateActionButtons = useCallback((_: TItem, rowIndex: number): ReactNode => {
         return <TableRowButtons onDelete={handleRowDelete} onEdit={handleRowEdit} rowIndex={rowIndex}/>;
     }, [handleRowDelete, handleRowEdit]);
 
+    const handleTableDelete = () => {
+        setIsMounted(false);
+        setTimeout(() => {
+            tablesStore.deleteTable(tableId);
+        }, 300);
+    };
+
+    if (!shouldRender) return null;
+
     return (
-        <div className="b-user-table">
-            <Controls id={id} initial={initial}/>
+        <div
+            className={`b-feature-table ${initial ? '' : isMounted ? 'table-copy-animation' : 'table-delete-animation'} ${className || ''}`}
+            ref={containerRef}
+            {...rest}
+        >
+            <Controls id={tableId} onDelete={handleTableDelete} initial={initial}/>
             <Table
                 withPlaceholderRows
                 value={tableItems}
-                className="b-user-table__table b-table--responsive"
+                className="b-feature-table__table b-table--responsive"
             >
                 <Column field="name" header="Name" body={bodyTemplateName}/>
                 <Column field="surname" header="Surname" body={bodyTemplateSurname}/>
@@ -110,9 +130,10 @@ const TableUi: FC<TTableUiProps> = (
             </Table>
             <Modal visible={isModalVisible} onHide={handleModalHide}>
                 <TableForm
-                    className="b-user-table__form"
+                    className="b-feature-table__form"
                     shouldSubscribe={false}
                     onSubmit={handleSubmit}
+                    type={'rowEdit'}
                     initialValue={{...tableItems[selectedRowIndex || 0]}}
                     buttonText="AGREE"
                 />

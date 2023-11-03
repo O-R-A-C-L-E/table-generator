@@ -1,17 +1,17 @@
-import {FC, useCallback, useEffect, useRef, useState} from "react";
-import * as React from "react";
+import * as React from 'react';
+import {FC, useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import Option from './components/Option/index.js';
-import VirtualizedDropdown from "./components/VirtualizedDropdown/index.js";
-import {getValue} from "./utils.js";
+import VirtualizedDropdown from './components/VirtualizedDropdown/index.js';
+import {getValue} from './utils.js';
 import './styles.less';
-import {TRect} from "../../hooks/useRefBoundingClientRect.js";
+import {TRect} from '@/hooks/useRefBoundingClientRect.js';
 
 
 export interface ISelectChangeEvent {
     target: {
         value: string;
         name: string;
-    }
+    };
 }
 
 type TOptionObject = {
@@ -26,8 +26,8 @@ interface ISelectProps extends Omit<React.DetailedHTMLProps<React.InputHTMLAttri
     onClose?: () => void;
     multiple?: boolean;
     portal?: boolean;
-    root?: Element | DocumentFragment
-    value: string | undefined
+    root?: Element | DocumentFragment;
+    value: string | undefined;
     error?: boolean;
 }
 
@@ -52,42 +52,40 @@ const Select: FC<ISelectProps> = (
     const [containerPosition, setContainerPosition] = useState<TRect>({
         bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0, x: 0, y: 0,
     });
-
     const valueRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const optionRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         setSelectedValue(value);
-    }, [value])
+    }, [value]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            if (!containerRef.current) return;
+    useLayoutEffect(() => {
+        if (!containerRef.current) return;
 
-            setContainerPosition(containerRef.current.getBoundingClientRect());
-        }, 100);
-    }, [])
+        setContainerPosition(containerRef.current.getBoundingClientRect());
+    }, []);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         let timeout: number;
         const dropdownPositionHandler = () => {
             clearTimeout(timeout);
-            timeout = setTimeout(() => {
+            timeout = window.setTimeout(() => {
                 if (!containerRef.current) return;
-                setContainerPosition(containerRef.current.getBoundingClientRect())
+                setContainerPosition(containerRef.current.getBoundingClientRect());
             }, 10);
-        }
+        };
         window.addEventListener('resize', dropdownPositionHandler);
+        window.addEventListener('scroll', dropdownPositionHandler);
 
         return () => {
-            window.removeEventListener('resize', dropdownPositionHandler)
+            window.removeEventListener('resize', dropdownPositionHandler);
+            window.removeEventListener('scroll', dropdownPositionHandler);
             clearTimeout(timeout);
-        }
+        };
     }, []);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!containerRef.current) return;
         const handleOutsideClick = (e: MouseEvent) => {
             const {target} = e;
@@ -100,7 +98,7 @@ const Select: FC<ISelectProps> = (
 
         return () => {
             window.removeEventListener('click', handleOutsideClick);
-        }
+        };
     }, [isVisible, onClose]);
 
     useEffect(() => {
@@ -116,8 +114,12 @@ const Select: FC<ISelectProps> = (
 
         return () => {
             window.removeEventListener('keydown', handleEnterPress);
-        }
+        };
     }, []);
+
+    const getContainerPosition = () => {
+        return containerRef.current?.getBoundingClientRect() || containerPosition;
+    };
 
 
     const handleClick = () => {
@@ -128,26 +130,32 @@ const Select: FC<ISelectProps> = (
         setSelectedValue(option);
         setIsVisible(false);
         onChange({
-           target: {
-               value: option,
-               name: name || '',
-           }
+            target: {
+                value: option,
+                name: name || '',
+            }
         });
     }, [name, onChange]);
 
     return (
-        <div ref={containerRef} className={`b-select ${className || ''}`} {...rest} onClick={handleClick}>
+        <div
+            ref={containerRef}
+            className={`b-select ${className || ''} ${error && 'error'}`}
+            data-testid='select-component'
+            onClick={handleClick}
+            {...rest}
+        >
             <div
                 ref={valueRef}
                 tabIndex={0}
-                className={`b-select__value b-inputtext__value ${error && 'error'}`}
+                className={`b-select__value b-inputtext__value`}
             >
-                {getValue('caption', selectedValue) || <span className='b-select__value-placeholder'>{placeholder}</span>}
+                {getValue('caption', selectedValue) || <span className="b-select__value-placeholder">{placeholder}</span>}
             </div>
             <VirtualizedDropdown
                 visible={isVisible}
                 portal={portal}
-                containerPosition={containerPosition}
+                containerPosition={getContainerPosition()}
                 dropUp
                 onClick={handleClick}
                 itemHeight={optionRef.current?.clientHeight || 42}
@@ -161,7 +169,7 @@ const Select: FC<ISelectProps> = (
                     />
                 ))}
             </VirtualizedDropdown>
-            <input ref={inputRef} className={'dn'} type="radio" name={name} value={selectedValue} onChange={(e) => onChange(e)}/>
+            <select className={'dn'} name={name} value={selectedValue} placeholder={placeholder}/>
             <div ref={optionRef} className="b-dropdown__option dn"></div>
         </div>
     );

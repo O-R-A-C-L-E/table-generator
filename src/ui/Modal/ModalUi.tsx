@@ -1,5 +1,5 @@
-import {TModalUiProps} from "./index.js";
-import {FC, ReactNode} from "react";
+import {TModalUiProps} from './index.js';
+import {FC, ReactNode} from 'react';
 
 type TTemplateName = 'footer' | 'header';
 const ModalUi: FC<TModalUiProps> = (props) => {
@@ -11,12 +11,12 @@ const ModalUi: FC<TModalUiProps> = (props) => {
         } else {
             return template;
         }
-    }
+    };
 
     return (
-        <div className='b-modal__container'>
-            {props.masked && <div className='b-modal__mask'></div>}
-            <div className="b-modal">
+        <div data-testid={'Modal'} className={`b-modal__container ${props.className || ''}`}>
+            {props.masked && <div className="b-modal__mask"></div>}
+            <div className={`b-modal`}>
                 <div onClick={props.onHide} className="b-modal__hide-button"></div>
                 {props.header && (
                     <div className="b-modal__header">{renderTemplate('header')}</div>
@@ -27,7 +27,7 @@ const ModalUi: FC<TModalUiProps> = (props) => {
                 )}
             </div>
         </div>
-    )
+    );
 };
 
 export default ModalUi;

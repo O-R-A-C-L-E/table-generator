@@ -1,7 +1,7 @@
 @import (reference) '../../assets/less/imports';
 
 .b-table-form {
-  min-width: 17.5rem;
+  width: 17.5rem;
   background: #FFFFFF;
   padding: 1rem;
   display: flex;
@@ -18,11 +18,20 @@
     transition: color .2s ease-in;
     width: 100%;
 
-    &--focus-hide-placeholder:focus::placeholder {
-      transition: color .2s ease-in;
-      color: transparent;
+    &--focus-hide-placeholder > input:focus {
+      &::placeholder {
+        transition: color .2s ease-in;
+        color: transparent !important;
+      }
     }
   }
+
+  &__error {
+    color: @button-danger-bg-color;
+    font-size: .75rem;
+    padding: 0 .5rem;
+  }
+
   &__form-submit {
     width: 100%;
     display: flex;

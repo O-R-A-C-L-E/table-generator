@@ -11,9 +11,30 @@
   padding: @base-button-padding;
   border: 1px solid;
   border-radius: @base-button-border-radius;
+  cursor: pointer;
+  transform: scale(1);
+  transition: all .3s ease-out;
+
+  &:hover {
+    opacity: .9;
+    transform: scale(1.02) perspective(1px);
+  }
+
+  &:active {
+    transform: scale(.98) perspective(1px);
+  }
 
   &:focus {
     outline: @base-input-outline;
+  }
+
+  &[disabled] {
+    tab-index: none;
+    pointer-events: none;
+    cursor: default;
+    background: @base-disabled-bg-color;
+    color: @base-disabled-text-color;
+    border-color: @base-disabled-bg-color;
   }
 
   &--primary {
@@ -32,22 +53,20 @@
     border: none;
     text-decoration: underline;
     background: none;
-    padding: .5rem;
+    padding: .2rem;
 
     &-primary {
       color: @button-primary-bg-color;
 
       &:focus {
-        outline: none;
-        .box-shadow(0 .2rem .2rem 0 @base-input-outline-color);
+        outline: 1px solid @button-primary-bg-color;
       }
     }
     &-danger {
       color: @button-danger-bg-color;
 
       &:focus {
-        outline: none;
-        .box-shadow(0 .2rem .2rem 0 @button-danger-bg-color);
+        outline: 1px solid @button-danger-bg-color;
       }
     }
   }

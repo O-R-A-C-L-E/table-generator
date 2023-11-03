@@ -1,5 +1,7 @@
+import {BehaviorSubject} from 'rxjs';
+
 export type TTable = {
-    id: number;
+    id: string | number;
     items: TItem[];
     initial: boolean
 };
@@ -11,6 +13,9 @@ export type TItem = {
     city: string;
 };
 
+export type TTableSubject = BehaviorSubject<TTable>;
+
 export type TTablesInitialState = {
-    tables: TTable[];
+    generator: TTableSubject;
+    tables: BehaviorSubject<TTableSubject[]>
 };

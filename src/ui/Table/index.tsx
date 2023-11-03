@@ -57,14 +57,14 @@ const Table: FC<ITableProps> = (
         if (!uniqValueField) return rowItem?.id || rowItem?.uid || rowItem?.uuid || index;
         return rowItem[uniqValueField];
     };
-
+    console.log(value);
     return <table className={`b-table b-table--${tableLayout} ${className || ''}`} {...rest}>
         <thead className='b-table__head'>
         <tr className='b-table__row b-table__head__row'>{children}</tr>
         </thead>
         <tbody className='b-table__body'>
         {value?.map((rowItem, rowIndex) => (
-            <tr className='b-table__row b-table__body__row' key={getKey(rowItem, rowIndex, keyField)}>
+            <tr data-testid='tbody-tr' className='b-table__row b-table__body__row' key={getKey(rowItem, rowIndex, keyField)}>
                 {columns.map((columnItem, i) => (
                     <td className='b-table__cell b-table__body__cell' key={columnItem.field || i}>
                         {renderCellContent(rowItem, rowIndex, columnItem)}

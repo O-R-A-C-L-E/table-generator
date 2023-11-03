@@ -1,91 +1,99 @@
-import {Store} from "./index.ts";
-import React from "react";
-import {map, Subscription} from 'rxjs';
-import {findTableByIdAndFilterNullish} from "../operators/findTableByIdAndFilterNullish.ts";
-import {TItem, TTable, TTablesInitialState} from "../types/store/tablesStore.js";
+import React from 'react';
+import {BehaviorSubject, map, Subscription} from 'rxjs';
+import {TItem, TTable, TTablesInitialState, TTableSubject} from '../types/store/tablesStore.js';
 
 const initialState: TTablesInitialState = {
-    tables: [
-        {
-            id: Date.now(),
-            items: [],
-            initial: true,
-        }
-    ],
+    generator: new BehaviorSubject<TTable>({
+        id: 'Generator',
+        items: [],
+        initial: true
+    }),
+    tables: new BehaviorSubject<TTableSubject[]>([]),
 };
 
-class TablesStore extends Store<TTablesInitialState> {
-    copyTable(tableId: number) {
-        console.log(tableId);
-        const table = this.state.value.tables.find(el => el.id === tableId);
-        if (!table?.items?.length) return
-        console.log(table, this.state.value.tables);
-        this.state.value.tables = [...this.state.value.tables, {...table, id: Date.now(), initial: false}];
-        console.log(this.state.value.tables);
-        this.state.next({
-            ...this.state.value,
-        });
+class TablesStore {
+    private readonly state: TTablesInitialState;
+
+    constructor(initialState: TTablesInitialState) {
+        this.state = initialState;
     }
 
-    deleteTable(tableId: number) {
-        this.state.next({
-            ...this.state.value,
-            tables: this.state.value.tables.filter((el) => el.id !== tableId),
-        });
+    copyTable() {
+        if (this.state.generator.value.items.length === 0) return;
+        this.state.tables.next([
+            ...this.state.tables.value,
+            new BehaviorSubject<TTable>({...this.state.generator.value, id: Date.now(), initial: false}),
+        ]);
+    }
+
+    deleteTable(tableId: number | string) {
+        this.state.tables.next(this.state.tables.value.filter(el => el.value.id !== tableId));
     }
 
     subscribeOnTablesChange(setState: React.Dispatch<React.SetStateAction<TTable[]>>): Subscription {
-        return this.state.pipe(
-            map(el => el.tables),
-        ).subscribe(setState);
-    }
-
-    subscribeOnTableChange(tableId: number, setState: React.Dispatch<React.SetStateAction<TTable>>): Subscription {
-        return this.state.pipe(
-            findTableByIdAndFilterNullish(tableId),
-        ).subscribe(setState);
-    }
-
-    subscribeOnTableItemChange(tableId: number, setState: React.Dispatch<React.SetStateAction<TItem[]>>): Subscription {
-        return this.state.pipe(
-            findTableByIdAndFilterNullish(tableId),
-            map(el => el.items),
-        ).subscribe(setState);
-    }
-
-    addTableItem(tableIndex: number, item: TItem) {
-        this.state.value.tables[tableIndex] = {
-            ...this.state.value.tables[tableIndex],
-            items: [...this.state.value.tables[tableIndex].items, item],
-        };
-        this.state.next({
-            ...this.state.value,
-        })
-    }
-
-    editTableItem(tableId: number, rowIndex: number, item: TItem) {
-        const table = this.state.value.tables.find(el => el.id === tableId);
-        if (!table) return;
-        table.items = table.items.map((el, i) => {
-            return i === rowIndex ? item : el;
+        return this.state.tables.subscribe((el) => {
+            setState(el.map(el => el.value));
         });
-        this.state.next({
-            ...this.state.value,
-        })
     }
-    deleteTableItem(tableId: number, rowIndex: number) {
-        const table = this.state.value.tables.find(el => el.id === tableId);
-        if (!table) return;
-        table.items = table.items.filter((_, i) => {
+
+    subscribeOnTableChange(tableId: number | string, setState: React.Dispatch<React.SetStateAction<TTable>>): Subscription {
+        const tableSubject = this.getTableSubjectById(tableId);
+        return tableSubject.subscribe(setState);
+    }
+
+    subscribeOnTableItemChange(tableId: number | string, setState: React.Dispatch<React.SetStateAction<TItem[]>>): Subscription {
+        const tableSubject = this.getTableSubjectById(tableId);
+        return tableSubject.pipe(
+            map(el => el.items)
+        ).subscribe(setState);
+    }
+
+    addTableItem(item: TItem) {
+        this.state.generator.next({
+            ...this.state.generator.value,
+            items: [...this.state.generator.value.items, item],
+        });
+    }
+
+    editTableItem(tableId: number | string, rowIndex: number, item: TItem) {
+        const tableSubject = this.getTableSubjectById(tableId);
+        if (!tableSubject) return;
+        tableSubject.next({
+            ...tableSubject.value,
+            items: tableSubject.value.items.map((el, i) => {
+                return i === rowIndex ? item : el;
+            }),
+        });
+    }
+
+    deleteTableItem(tableId: number | string, rowIndex: number) {
+        const tableSubject = this.getTableSubjectById(tableId);
+        if (!tableSubject) return;
+        const updatedItems = tableSubject.value.items.filter((_, i) => {
             return i !== rowIndex;
         });
-        if (!table.initial && !table.items.length) {
+        if (!tableSubject.value.initial && updatedItems.length === 0) {
             this.deleteTable(tableId);
             return;
         }
-        this.state.next({
-            ...this.state.value,
-        })
+        tableSubject.next({
+            ...tableSubject.value,
+            items: updatedItems,
+        });
+    }
+
+    private getTableSubjectById(id: number | string): TTableSubject {
+        if (id === 'Generator') return this.state.generator;
+        return this.state.tables.getValue().filter(el => el.getValue().id === id)[0];
+    }
+
+    getTableState(id: number | string) {
+        const table = this.getTableSubjectById(id);
+        return table.getValue();
+    }
+
+    getState() {
+        return this.state;
     }
 }
 

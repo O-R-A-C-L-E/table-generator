@@ -64,6 +64,17 @@
     &__cell {
       border: @base-border;
       background: @table-body-cell-bg;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+
+      &-vlaue {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* padding-right: 100px; */
+        display: inline-block;
+        width: 100%;
+      }
+
 
       &--placeholder {
         padding: 1.3125rem !important;
@@ -81,6 +92,11 @@
 
 @media screen and (max-width: 40em) {
   .b-table {
+
+    &__row--placeholder ~ &__row--placeholder {
+      display: none !important;
+    }
+
     &--responsive .b-table__head__cell {
       display: none !important;
     }
@@ -92,6 +108,20 @@
       float: left;
       clear: left;
       border: 0 none;
+    }
+
+    &--responsive .b-table__cell-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      overflow: hidden;
+    }
+
+    &--responsive .b-table__cell-value {
+      display: inline-block;
+      width: 80%;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     &--responsive .b-table__body__cell .b-table__cell-title {

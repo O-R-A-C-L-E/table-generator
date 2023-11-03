@@ -1,7 +1,8 @@
 import {fileURLToPath, URL} from 'node:url'
-import {defineConfig} from 'vite'
+import {defineConfig} from 'vitest/config';
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr';
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,6 +12,11 @@ export default defineConfig({
             include: "**/*.svg?react",
         }),
     ],
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: './src/__tests__/setup.js',
+    },
     css: {
         preprocessorOptions: {
             less: {

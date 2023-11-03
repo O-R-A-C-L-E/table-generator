@@ -2,6 +2,17 @@
 
 .b-select {
 
+  &.error {
+    .b-select__value {
+      color: @button-danger-bg-color;
+      border-color: @button-danger-bg-color;
+    }
+
+    .b-select__value-placeholder {
+      color: @button-danger-bg-color;
+    }
+  }
+
   &__value {
     cursor: pointer;
     color: @dark-color;

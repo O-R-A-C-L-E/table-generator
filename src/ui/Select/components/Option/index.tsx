@@ -19,7 +19,6 @@ const Option: FC<IOptionProps> = ({value, onClick, deletable, ...rest}) => {
     };
 
     useEffect(() => {
-        if (!optionElementRef.current) return;
         const handleEnterPress = (e: KeyboardEvent) => {
             if (e.key !== 'Enter' && document.activeElement !== optionElementRef.current) return;
             const v = getValue('value', value);
@@ -41,6 +40,7 @@ const Option: FC<IOptionProps> = ({value, onClick, deletable, ...rest}) => {
             tabIndex={0}
             className="b-select__option"
             onClick={handleClick}
+            role={'option'}
             data-option-value={getValue('value', value)}
             {...rest}
         >

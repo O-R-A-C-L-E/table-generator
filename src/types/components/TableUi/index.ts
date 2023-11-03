@@ -1,7 +1,8 @@
-import {TItem} from "../../store/tablesStore.js";
+import {TItem} from '../../store/tablesStore.js';
+import {ComponentProps} from 'react';
 
-export type TTableUiProps = {
-    id: number;
+export interface ITableUiProps extends ComponentProps<'div'> {
+    tableId: string | number;
     initial: boolean;
     items: TItem[];
 }

@@ -1,38 +1,12 @@
-import * as React from 'react';
-import {FC, useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
-import Option from './components/Option/index.js';
-import VirtualizedDropdown from './components/VirtualizedDropdown/index.js';
+import {FC, MouseEventHandler, useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
+import {Composition, IOptionProps, ISelectProps} from '@/types/ui/Select.js';
+import VirtualizedDropdown from './components/VirtualizedDropdown/VirtualizedDropdown.js';
+import {TRect} from '@/hooks/useRefBoundingClientRect.js';
 import {getValue} from './utils.js';
 import './styles.less';
-import {TRect} from '@/hooks/useRefBoundingClientRect.js';
-
-
-export interface ISelectChangeEvent {
-    target: {
-        value: string;
-        name: string;
-    };
-}
-
-type TOptionObject = {
-    value: string;
-    caption: string;
-};
-export type TOption = TOptionObject | string;
-
-interface ISelectProps extends Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLDivElement>, HTMLDivElement>, 'onChange' | 'ref' | 'value'> {
-    options: TOption[];
-    onChange: (e: ISelectChangeEvent) => void;
-    onClose?: () => void;
-    multiple?: boolean;
-    portal?: boolean;
-    root?: Element | DocumentFragment;
-    value: string | undefined;
-    error?: boolean;
-}
 
 // TODO: support multiple values
-const Select: FC<ISelectProps> = (
+const Select: FC<ISelectProps> & Composition = (
     {
         className,
         options = [],
@@ -48,22 +22,16 @@ const Select: FC<ISelectProps> = (
     }
 ) => {
     const [isVisible, setIsVisible] = useState(false);
-    const [selectedValue, setSelectedValue] = useState<string | undefined>(undefined);
     const [containerPosition, setContainerPosition] = useState<TRect>({
         bottom: 0, height: 0, left: 0, right: 0, top: 0, width: 0, x: 0, y: 0,
     });
     const valueRef = useRef<HTMLDivElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
     const optionRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        setSelectedValue(value);
-    }, [value]);
-
     useLayoutEffect(() => {
-        if (!containerRef.current) return;
+        if (!valueRef.current) return;
 
-        setContainerPosition(containerRef.current.getBoundingClientRect());
+        setContainerPosition(valueRef.current.getBoundingClientRect());
     }, []);
 
     useLayoutEffect(() => {
@@ -71,8 +39,8 @@ const Select: FC<ISelectProps> = (
         const dropdownPositionHandler = () => {
             clearTimeout(timeout);
             timeout = window.setTimeout(() => {
-                if (!containerRef.current) return;
-                setContainerPosition(containerRef.current.getBoundingClientRect());
+                if (!valueRef.current) return;
+                setContainerPosition(valueRef.current.getBoundingClientRect());
             }, 10);
         };
         window.addEventListener('resize', dropdownPositionHandler);
@@ -86,12 +54,12 @@ const Select: FC<ISelectProps> = (
     }, []);
 
     useLayoutEffect(() => {
-        if (!containerRef.current) return;
+        if (!valueRef.current) return;
         const handleOutsideClick = (e: MouseEvent) => {
             const {target} = e;
-            if (target instanceof Node && !containerRef.current?.contains(target)) {
-                isVisible && onClose?.();
+            if (target instanceof Node && !valueRef.current?.contains(target)) {
                 setIsVisible(false);
+                onClose?.();
             }
         };
         window.addEventListener('click', handleOutsideClick);
@@ -118,17 +86,16 @@ const Select: FC<ISelectProps> = (
     }, []);
 
     const getContainerPosition = () => {
-        return containerRef.current?.getBoundingClientRect() || containerPosition;
+        return valueRef.current?.getBoundingClientRect() || containerPosition;
     };
 
 
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         setIsVisible(prevState => !prevState);
-    };
+    }, []);
 
     const handleOptionClick = useCallback((option: string) => {
-        setSelectedValue(option);
-        setIsVisible(false);
+        setIsVisible(prevState => !prevState);
         onChange({
             target: {
                 value: option,
@@ -139,25 +106,23 @@ const Select: FC<ISelectProps> = (
 
     return (
         <div
-            ref={containerRef}
             className={`b-select ${className || ''} ${error && 'error'}`}
-            data-testid='select-component'
-            onClick={handleClick}
+            data-testid="Select-component"
             {...rest}
         >
             <div
                 ref={valueRef}
+                onClick={handleClick}
+                data-testid="Select-component-value"
                 tabIndex={0}
                 className={`b-select__value b-inputtext__value`}
             >
-                {getValue('caption', selectedValue) || <span className="b-select__value-placeholder">{placeholder}</span>}
+                {getValue('caption', value) || <span className="b-select__value-placeholder">{placeholder}</span>}
             </div>
             <VirtualizedDropdown
                 visible={isVisible}
                 portal={portal}
                 containerPosition={getContainerPosition()}
-                dropUp
-                onClick={handleClick}
                 itemHeight={optionRef.current?.clientHeight || 42}
                 root={root}
             >
@@ -169,10 +134,61 @@ const Select: FC<ISelectProps> = (
                     />
                 ))}
             </VirtualizedDropdown>
-            <select className={'dn'} name={name} value={selectedValue} placeholder={placeholder}/>
+            <select className={'dn'} name={name} defaultValue={value} placeholder={placeholder}>
+                <option value={value}></option>
+            </select>
             <div ref={optionRef} className="b-dropdown__option dn"></div>
         </div>
     );
 };
 
+const Option: FC<IOptionProps> = (
+    {
+        value,
+        onClick,
+        deletable,
+        ...rest
+    }
+) => {
+    const optionElementRef = useRef<HTMLDivElement>(null);
+    const handleClick: MouseEventHandler<HTMLDivElement> = () => {
+        const v = getValue('value', value);
+        if (!v) return;
+        deletable && deletable(v);
+        onClick && onClick(v);
+    };
+
+    useEffect(() => {
+        const handleEnterPress = (e: KeyboardEvent) => {
+            if (e.key !== 'Enter' && document.activeElement !== optionElementRef.current) return;
+            const v = getValue('value', value);
+            if (!v) return;
+            deletable && deletable(v);
+            onClick && onClick(v);
+        };
+
+        window.addEventListener('keydown', handleEnterPress);
+
+        return () => {
+            window.removeEventListener('keydown', handleEnterPress);
+        };
+    }, [deletable, onClick, value]);
+
+
+    return (
+        <div
+            tabIndex={0}
+            className="b-select__option"
+            data-testid={'Select-option'}
+            onClick={handleClick}
+            role={'option'}
+            data-option-value={getValue('value', value)}
+            {...rest}
+        >
+            {getValue('caption', value)}
+        </div>
+    );
+};
+
+Select.Option = Option;
 export default Select;

@@ -1,10 +1,10 @@
-import TableGenerator from './components/TableGenerator/TableGenerator.tsx';
 import TableList from './components/TableList/TableList.tsx';
 import './App.less';
 import {tablesStore} from '@/store/tablesStore.js';
 import {useCallback} from 'react';
 import {TFormStateValues} from '@/types/store/formStore.js';
 import TableForm from '@/components/TableForm/TableForm.js';
+import TableUi from '@/components/TableUi/TableUi.js';
 
 function App() {
 
@@ -28,7 +28,7 @@ function App() {
                     />
                 </div>
             </div>
-            <TableGenerator/>
+            <TableUi data-testid={'generator-table'} tableId={'Generator'} initial={true}/>
             <TableList/>
         </>
     );

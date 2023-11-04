@@ -8,6 +8,7 @@
   flex-direction: column;
   background: #FFFFFF;
   border: @base-border;
+  z-index: 9999;
   border-radius: @base-border-radius;
   .base-box-shadow();
 
@@ -31,19 +32,16 @@
       width: 0.3125rem;
     }
 
-    /* Track */
     &::-webkit-scrollbar-track {
       background: transparent;
       border-radius: 10px;
     }
 
-    /* Handle */
     &::-webkit-scrollbar-thumb {
       background: @base-color;
       border-radius: 0.625rem;
     }
 
-    /* Handle on hover */
     &::-webkit-scrollbar-thumb:hover {
       background: #555;
     }

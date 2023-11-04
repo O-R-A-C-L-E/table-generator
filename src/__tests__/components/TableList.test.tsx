@@ -1,30 +1,31 @@
-import {afterEach, beforeEach, describe, expect} from 'vitest';
+import {describe, expect} from 'vitest';
 import {tablesStore} from '@/store/tablesStore.js';
 import {render, screen, waitFor} from '@testing-library/react';
-import TableList from '@/components/TableList/TableList.js';
 import {act} from 'react-dom/test-utils';
+import TableList from '@/components/TableList/TableList.js';
 
 describe('TableList component isolation test', () => {
-    beforeEach(async () => {
+    it('Should render list of generated tables and should get state from global store', async () => {
         render(<TableList/>);
-        act(() => {
+        await act(async () => {
             tablesStore.addTableItem({
                 name: 'Alex',
                 surname: 'Sedov',
                 age: '25',
                 city: 'Riga',
             });
-        })
-    })
-    afterEach(() => {
-        act(() => {
-            tablesStore.deleteTableItem('Generator', 0);
-        })
-    })
-    it('Should render generated table', async () => {
-        act(() => {
-            tablesStore.copyTable();
-        })
-        await waitFor(async () => expect(await screen.findByTestId('generated-table')).toBeInTheDocument());
+        });
+        await act(async () => {
+            let count = 0;
+            const intr = setInterval(() => {
+                if (count === 3) clearInterval(intr);
+                tablesStore.copyTable();
+                count++;
+            }, 1);
+        });
+        await waitFor(async () => {
+            const tables = await screen.findAllByTestId('generated-table');
+            expect(tables.length).toBe(4);
+        }, {timeout: 4000});
     });
-})
+});

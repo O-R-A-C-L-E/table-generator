@@ -13,6 +13,7 @@ type TModalProps = {
     header?: TTemplate;
     root?: Element | DocumentFragment;
     hideOnEsc?: boolean
+    hideButton?: boolean
 };
 type TTemplate = ((props: TModalUiProps) => ReactNode) | ReactNode;
 
@@ -32,7 +33,6 @@ const Modal: FC<TModalProps> = (
 ) => {
     const shouldRender = useDelayUnmount(visible, 300);
     const container = root || document.body;
-
 
     useLayoutEffect(() => {
         if (!hideOnEsc) return;

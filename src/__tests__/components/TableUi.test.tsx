@@ -3,24 +3,23 @@ import {render, RenderResult, screen, waitFor} from '@testing-library/react';
 import TableUi from '@/components/TableUi/TableUi.js';
 import {userEvent} from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-
+import {tablesStore} from '@/store/tablesStore.js';
+tablesStore.addTableItem({
+    name: 'Alex',
+    surname: 'Sisov',
+    age: '25',
+    city: 'Riga',
+});
+tablesStore.addTableItem({
+    name: 'Andre',
+    surname: 'Borch',
+    age: '30',
+    city: 'Ventspils',
+});
 describe('TableUi component isolation tests', () => {
     let tableUi: RenderResult;
     beforeEach(() => {
-        tableUi = render(<TableUi tableId={'Generator'} initial={true} items={[
-            {
-                name: 'Alex',
-                surname: 'Sisov',
-                age: '25',
-                city: 'Riga',
-            },
-            {
-                name: 'Andre',
-                surname: 'Borch',
-                age: '30',
-                city: 'Ventspils',
-            },
-        ]}/>);
+        tableUi = render(<TableUi tableId={'Generator'} initial={true}/>);
     });
     it('Should have two table rows', async () => {
         const rows = await tableUi.findAllByTestId('tbody-tr');
@@ -55,7 +54,6 @@ describe('TableUi component isolation tests', () => {
         const user = userEvent.setup();
         const rows = await screen.findAllByTestId('tbody-tr');
         const editBtn = await rows[0].querySelector('[data-button-action="edit"]');
-        console.log(editBtn);
         if (editBtn) await user.click(editBtn);
 
         await waitFor(async () => expect(await screen.findByTestId('Modal'), 'Modal component rendered').toBeInTheDocument());
@@ -63,7 +61,7 @@ describe('TableUi component isolation tests', () => {
 
         const tableForm = await screen.findByTestId('TableForm');
         const inputs = tableForm.querySelectorAll('input');
-        const citySelect = await tableForm.querySelector('.b-select');
+        const citySelect = await screen.findByTestId('Select-component-value');
         await user.clear(inputs[0]);
         await user.type(inputs[0], 'Bimbo');
         if (citySelect) await user.click(citySelect);

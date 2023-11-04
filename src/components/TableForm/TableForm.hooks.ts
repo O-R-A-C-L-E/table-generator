@@ -1,9 +1,9 @@
 import {ChangeEvent, FormEvent, useLayoutEffect, useState} from 'react';
 import {formStore} from '@/store/formStore.js';
-import {ISelectChangeEvent} from '@/ui/Select/index.js';
 import {TFormState, TFormStateValues} from '@/types/store/formStore.js';
 import {TValidationSchema, validate} from '@/utils/validation.js';
 import {getKeys} from '@/utils/getKeys.js';
+import {ISelectChangeEvent} from '@/types/ui/Select.js';
 
 const validation: TValidationSchema<TFormStateValues> = {
     name: {
@@ -51,6 +51,7 @@ const useObservableFormState = (type: string, initialState?: TFormStateValues) =
         formStore.handleChange(type, formState.values, errors);
         if (getKeys(errors).filter(key => !errors[key].isValid).length === 0) {
             onSubmit(e);
+            formStore.clear(type);
         }
     };
 

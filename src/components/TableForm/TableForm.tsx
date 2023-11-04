@@ -2,11 +2,11 @@ import {FC, FormEvent, ReactElement} from 'react';
 import {getCities} from '@/utils/getCities.js';
 import './styles.less';
 import useObservableFormState from "@/components/TableForm/TableForm.hooks.ts";
-import Form from "@/ui/Form/index.tsx";
-import InputText from "@/ui/InputText/index.tsx";
-import Select from "@/ui/Select/index.tsx";
-import Button from "@/ui/Button/index.tsx";
-import {TTableFormProps} from '@/types/components/TableForm/index.js';
+import Form from "@/ui/Form/Form.tsx";
+import InputText from "@/ui/InputText/InputText.tsx";
+import Select from "@/ui/Select/Select.tsx";
+import Button from "@/ui/Button/Button.tsx";
+import {TTableFormProps} from '@/types/components/TableForm/TableForm.js';
 import {getKeys} from '@/utils/getKeys.js';
 
 
@@ -79,11 +79,10 @@ const TableForm: FC<TTableFormProps> = (
                 onChange={handleChange}
                 placeholder='City'
                 className={'b-table-form__form-control b-table-form__form-control--focus-hide-placeholder'}
-                multiple={false}
             />
             {errors.city?.touched && errors.city?.error && <div data-testid={'input-error-message'} className="b-table-form__error">{errors.city?.error}</div>}
         </div>
-        <Button disabled={!getIsValid()} data-testid={'TableForm--submit'} className='b-table-form__form-submit' type='submit'>{buttonText}</Button>
+        <Button disabled={!getIsValid()} data-testid={`TableForm--submit-${buttonText}`} className='b-table-form__form-submit' type='submit'>{buttonText}</Button>
     </Form>;
 };
 

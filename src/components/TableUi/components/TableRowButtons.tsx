@@ -1,6 +1,6 @@
 import {TTableRowButtonsProps} from '@/types/components/TableUi/components/TableRowButtons.js';
 import {FC} from 'react';
-import Button from '@/ui/Button/index.js';
+import Button from '@/ui/Button/Button.js';
 
 
 const TableRowButtons: FC<TTableRowButtonsProps> = ({onEdit, rowIndex, onDelete}) => {

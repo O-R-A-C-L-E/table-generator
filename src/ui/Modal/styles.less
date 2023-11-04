@@ -8,6 +8,7 @@
   border: @base-border;
   .base-box-shadow();
   padding: 1.25rem;
+  z-index: 9999;
 
   &__mask {
     background: @base-overlay-color;
@@ -19,6 +20,7 @@
   }
 
   &__container {
+    z-index: 9999;
     min-width: 100vw;
     min-height: 100vh;
     position: fixed;

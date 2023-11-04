@@ -46,6 +46,19 @@ class FormStore {
         });
     }
 
+    clear(type:string) {
+        this.state[type].next({
+            ...this.state[type].value,
+            values: {
+                name: '',
+                surname: '',
+                age:'',
+                city:''
+            },
+            errors: {},
+        })
+    }
+
     getState(type:string) {
         if (!this.state[type]) this.state[type] = new BehaviorSubject(formState);
         return this.state[type].value;

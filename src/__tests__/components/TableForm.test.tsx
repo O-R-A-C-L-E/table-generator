@@ -18,7 +18,7 @@ describe('TableForm component isolation tests', () => {
         nameInput = await screen.findByPlaceholderText('Name');
         surnameInput = await screen.findByPlaceholderText('Surname');
         ageInput = await screen.findByPlaceholderText('Age');
-        select = await screen.findByTestId('select-component');
+        select = await screen.findByTestId('Select-component-value');
         submitButton = await screen.findByText('ADD');
         await user.clear(nameInput)
         await user.clear(surnameInput)

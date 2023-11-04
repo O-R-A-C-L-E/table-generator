@@ -6,7 +6,6 @@ const initialState: TTablesInitialState = {
     generator: new BehaviorSubject<TTable>({
         id: 'Generator',
         items: [],
-        initial: true
     }),
     tables: new BehaviorSubject<TTableSubject[]>([]),
 };
@@ -22,8 +21,9 @@ class TablesStore {
         if (this.state.generator.value.items.length === 0) return;
         this.state.tables.next([
             ...this.state.tables.value,
-            new BehaviorSubject<TTable>({...this.state.generator.value, id: Date.now(), initial: false}),
+            new BehaviorSubject<Omit<TTable, 'initial'>>({...this.state.generator.value, id: Date.now()}),
         ]);
+        console.log(this.state.tables);
     }
 
     deleteTable(tableId: number | string) {
@@ -72,7 +72,7 @@ class TablesStore {
         const updatedItems = tableSubject.value.items.filter((_, i) => {
             return i !== rowIndex;
         });
-        if (!tableSubject.value.initial && updatedItems.length === 0) {
+        if (tableSubject.value.id !== 'Generator' && updatedItems.length === 0) {
             this.deleteTable(tableId);
             return;
         }

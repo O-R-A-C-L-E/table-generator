@@ -3,7 +3,6 @@ import {BehaviorSubject} from 'rxjs';
 export type TTable = {
     id: string | number;
     items: TItem[];
-    initial: boolean
 };
 
 export type TItem = {
